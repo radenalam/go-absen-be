@@ -1,4 +1,13 @@
-migrate create -ext sql -dir db/migrations create_users_table
+Migrations:
 
-migrate -path db/migrations/ -database 'postgres://alam@localhost:5432/go-absen?sslmode=disable' up
-migrate -path db/migrations/ -database 'postgres://alam@localhost:5432/go-absen?sslmode=disable' down
+to create migrations:
+
+- make create 'filename migrations'
+
+to run migrations:
+
+- make up
+
+drop migrations:
+
+- make down

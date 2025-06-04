@@ -9,14 +9,6 @@ func main() {
 	viperConfig := config.NewViper()
 	log := config.NewLogger(viperConfig)
 	db := config.NewDatabase(viperConfig, log)
-	// if viperConfig.GetBool("database.auto_migrate") {
-	// 	if err := db.AutoMigrate(entity.RegisteredEntities...); err != nil {
-	// 		log.Fatalf("AutoMigrate failed: %v", err)
-	// 	}
-	// 	fmt.Println("✅ Database migrated!")
-	// 	} else {
-	// 		fmt.Println("🔒 AutoMigrate skipped (production mode)")
-	// 	}
 	validate := config.NewValidator(viperConfig)
 	app := config.NewFiber(viperConfig)
 
