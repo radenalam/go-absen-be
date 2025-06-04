@@ -28,6 +28,18 @@ migrate:
 	@echo ">> Creating new migration: $(NAME)"
 	migrate create -ext sql -dir $(MIG_DIR) $(NAME)
 
+force:
+	@if [ "$(words $(MAKECMDGOALS))" -lt 2 ]; then \
+		echo "Usage: make force <version>"; exit 1; \
+	fi
+	@VERS=$$(lastword $(MAKECMDGOALS)); \
+	echo ">> Forcing migration version to $$VERS"; \
+	migrate -path $(MIG_DIR) -database "$(DB_URL)" force $$VERS
+
+drop:
+	@echo ">> Dropping all tables (fresh start)..."; \
+	migrate -path $(MIG_DIR) -database "$(DB_URL)" drop	
+
 # ----------------------------
 # Target seeder
 # ----------------------------
