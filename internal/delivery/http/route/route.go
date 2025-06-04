@@ -13,6 +13,8 @@ type RouteConfig struct {
 }
 
 func (c *RouteConfig) Setup() {
-	c.App.Get("/api/users", c.UserController.List)
+	// c.App.Get("/api/users", c.UserController.List)
+	c.App.Post("/api/users", c.UserController.Create)
+	c.App.Post("/api/auth/login", c.UserController.Login)
 
 }

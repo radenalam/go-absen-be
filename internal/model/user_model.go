@@ -20,3 +20,15 @@ type UserResponse struct {
 type VerifyUserRequest struct {
 	Token string `validate:"required"`
 }
+
+type CreateUserRequest struct {
+	Name     string  `json:"name" validate:"required"`
+	Username string  `json:"username" validate:"required"`
+	Email    *string `json:"email" validate:"omitempty,email"`
+	Password string  `json:"password" validate:"required,min=8"`
+}
+
+type LoginUserRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
