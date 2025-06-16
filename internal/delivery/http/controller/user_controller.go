@@ -21,6 +21,40 @@ func NewUserController(useCase *usecase.UserUseCase, logger *logrus.Logger) *Use
 	}
 }
 
+func (c *UserController) Create(ctx *fiber.Ctx) error {
+	request := new(model.CreateUserRequest)
+	err := ctx.BodyParser(request)
+	if err != nil {
+		c.Log.Warnf("Failed to parse request body : %+v", err)
+		return fiber.ErrBadRequest
+	}
+
+	response, err := c.UseCase.Create(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.Warnf("Failed to register user : %+v", err)
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
+}
+
+func (c *UserController) Login(ctx *fiber.Ctx) error {
+	request := new(model.LoginUserRequest)
+	err := ctx.BodyParser(request)
+	if err != nil {
+		c.Log.Warnf("Failed to parse request body : %+v", err)
+		return fiber.ErrBadRequest
+	}
+
+	response, err := c.UseCase.Login(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.Warnf("Failed to login user : %+v", err)
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.LoginResponse]{Data: response})
+}
+
 func (c *UserController) List(ctx *fiber.Ctx) error {
 	request := &model.SearchRequest{
 		Page: ctx.QueryInt("page", 1),
@@ -44,4 +78,12 @@ func (c *UserController) List(ctx *fiber.Ctx) error {
 		Data:   response,
 		Paging: paging,
 	})
+}
+
+func (c *UserController) Register(ctx *fiber.Ctx) error {
+	return ctx.SendString("Register User")
+}
+
+func (c *UserController) GetByID(ctx *fiber.Ctx) error {
+	return ctx.SendString("Get User By ID")
 }
