@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -164,10 +165,10 @@ func (c *UserUseCase) Verify(ctx context.Context, request *model.VerifyUserReque
 	user_token := new(entity.RefreshToken)
 	user_token.Token = request.Token
 
-	// if err := c.UserTokenRepository.FindByToken(tx, user_token); err != nil {
-	// 	c.Log.Warnf("Failed find user by token : %+v", err)
-	// 	return nil, fiber.ErrNotFound
-	// }
+	if err := c.RefreshTokenRepository.FindByToken(tx, user_token); err != nil {
+		c.Log.Warnf("Failed find user by token : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.Warnf("Failed commit transaction : %+v", err)
@@ -175,4 +176,19 @@ func (c *UserUseCase) Verify(ctx context.Context, request *model.VerifyUserReque
 	}
 
 	return &model.Auth{ID: user_token.UserID}, nil
+}
+
+func (u *UserUseCase) HasPermission(ctx context.Context, user_id uuid.UUID, permissionName string) (bool, error) {
+	var count int64
+	err := u.DB.WithContext(ctx).
+		Table("users").
+		Joins("JOIN user_roles ur ON ur.user_id = users.id").
+		Joins("JOIN role_permissions rp ON rp.role_id = ur.role_id").
+		Joins("JOIN permissions p ON p.id = rp.permission_id").
+		Where("users.id = ? AND p.name = ?", user_id, permissionName).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

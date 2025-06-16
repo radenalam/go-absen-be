@@ -79,3 +79,11 @@ func (c *UserController) List(ctx *fiber.Ctx) error {
 		Paging: paging,
 	})
 }
+
+func (c *UserController) Register(ctx *fiber.Ctx) error {
+	return ctx.SendString("Register User")
+}
+
+func (c *UserController) GetByID(ctx *fiber.Ctx) error {
+	return ctx.SendString("Get User By ID")
+}
